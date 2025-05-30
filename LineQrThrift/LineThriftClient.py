@@ -23,13 +23,25 @@ class LineThriftClient:
             "X-Line-Application": "DESKTOPMAC\t8.7.0\tMAC\t10.15.7",
             "Content-Type": "application/x-thrift; protocol=TCOMPACT",
             "x-lal": "tr_TR",
-            "x-lhm": "POST"
+            "x-lhm": "POST",
+            "x-client-ip": self._generate_random_ip(),
+            "x-forwarded-for": self._generate_random_ip()
         }
         if with_access and self.session_id:
             headers["X-Line-Access"] = self.session_id
         if extra_headers:
             headers.update(extra_headers)
         return headers
+
+    @staticmethod
+    def _generate_random_ip():
+        return f"{random.randint(1,255)}.{random.randint(1,255)}.{random.randint(1,255)}.{random.randint(1,255)}"
+
+    @staticmethod
+    def _generate_random_system():
+        prefix = random.choice(["DESKTOP", "MOBILE", "CHROME", "LINUX", "WIN", "MAC", "TABLET", "TV"])
+        suffix = ''.join(random.choices(string.ascii_uppercase + string.digits, k=random.randint(4,8)))
+        return f"{prefix}_{suffix}"
 
     def create_session(self):
         request_content = self.protocol.create_session()

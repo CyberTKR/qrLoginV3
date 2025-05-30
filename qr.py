@@ -8,6 +8,7 @@ import qrcode.image.pure
 import os
 from LineQrThrift.LineThriftClient import LineThriftClient
 from colorama import Fore, Style, init
+import json
 
 # Initialize colorama
 init(autoreset=True)
@@ -134,6 +135,21 @@ class LineQrLogin:
         login_result = self.client.verify_qr_code_login(qr_result.nonce)
         if login_result:
             print(f"{Fore.GREEN}QR code login successful!{Style.RESET_ALL}")
+            
+            try:
+                # Parse login result to get certificate
+                login_data = json.loads(login_result)
+                if 'certificate' in login_data:
+                    # Save certificate to current directory
+                    cert_path = os.path.join(os.getcwd(), 'cert.pem')
+                    with open(cert_path, 'w') as f:
+                        f.write(login_data['certificate'])
+                    print(f"{Fore.GREEN}Certificate saved to: {cert_path}{Style.RESET_ALL}")
+            except json.JSONDecodeError as e:
+                print(f"{Fore.RED}Failed to parse login data: {str(e)}{Style.RESET_ALL}")
+            except Exception as e:
+                print(f"{Fore.RED}Failed to save certificate: {str(e)}{Style.RESET_ALL}")
+                
             print(f"{Fore.CYAN}Login information: {Fore.GREEN}{login_result}{Style.RESET_ALL}")
         else:
             print(f"{Fore.RED}QR code login failed!{Style.RESET_ALL}")
