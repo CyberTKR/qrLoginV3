@@ -1,0 +1,5 @@
+httpx>=0.24.1
+thrift>=0.16.0
+qrcode>=7.4.2
+colorama>=0.4.6
+axolotl-curve25519>=0.4.1 
